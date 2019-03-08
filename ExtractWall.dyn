@@ -1,0 +1,570 @@
+{
+  "Uuid": "cc2b984a-dbe8-4505-95a9-9fb87b5eb61c",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "ExtractWall",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
+      "SelectedIndex": 153,
+      "NodeType": "ExtensionNode",
+      "Id": "8b1091f98d0e4197b9187ae4dbda560f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fcc63d05579a40a9878b9e96d5f9d574",
+          "Name": "Category",
+          "Description": "The selected Category.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "All built-in categories."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfCategory, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "Id": "634f837c95094a83ab160b7976a879b1",
+      "Inputs": [
+        {
+          "Id": "562a7b4239c44b87bcc19f93e5d1a5a5",
+          "Name": "Category",
+          "Description": "The Category",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "75bc3172dde94634ae028a0527e82d00",
+          "Name": "Elements",
+          "Description": "An element type.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Get all elements of the specified category from the model."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Parameters",
+      "Id": "c30e2a9c3083420094d0b2b3204f1e06",
+      "Inputs": [
+        {
+          "Id": "d49ed705a3c646378f4e84253e76a6e6",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d6e25c7a94dc4dd09ae179f516754fe4",
+          "Name": "Parameter[]",
+          "Description": "Parameter[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Obtain all of the Parameters from an Element, sorted by Name.\n\nElement.Parameters: Parameter[]"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Enable Python support and load DesignScript library\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\ndataEnteringNode = IN\r\n\r\n# Place your code below this line\r\nVwallExtent = []\r\nfor list in IN[0]:\r\n\tfor item in list:\r\n\t\tif str(item) == 'Type : Shearwall Extents': \r\n\t\t\tVwallExtent.append(list)\r\n\t\t#if len(list) > 20:\r\n\t\t#\tif item == 'Type : Shearwall Extents':\r\n\t\t#\t\tVwallExtent.append(item)\r\n# Assign your output to the OUT variable.\r\nOUT = VwallExtent",
+      "VariableInputPorts": true,
+      "Id": "bfe84e4caf3c4764bb6b80bfbb2451b9",
+      "Inputs": [
+        {
+          "Id": "5599a9a323e74cd2a610d262f478327b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "94b074f71ddd4afc996d61e90586e170",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Enable Python support and load DesignScript library\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\ndataEnteringNode = IN\r\n\r\n# Place your code below this line\r\nVwallList = IN[0]\r\nwallDict = []\r\n\r\nfor wall in VwallList:\r\n\r\n\tElementID = wall[25]\r\n\tWallLine = wall[4]\r\n\tWallLen = wall[12]\r\n\tWallType = wall[20]\r\n\tWallHD = wall[9]\t\r\n\r\n\tWallInfo = [ElementID,WallLine,WallLen,WallType,WallHD]\r\n\t\r\n\tif str(WallType) != 'SW Nailing : 6':\r\n\t\twallDict.append(WallInfo)\r\n\t\t\r\n\t\t\r\n\r\n\r\n# Assign your output to the OUT variable.\r\nOUT = wallDict",
+      "VariableInputPorts": true,
+      "Id": "0b40a4881b0b4144803eee6cf63a0e6b",
+      "Inputs": [
+        {
+          "Id": "638d1242a48b467ca158e15be8eff47d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b825cc74128a460f89a8b0929ed6f285",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "476c3bbb132e4f30ae58a3813f911d39",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "9cd962864bc44291884d85a4a53f8420",
+      "Inputs": [
+        {
+          "Id": "4dbb496d8aa14fa0b5bb13809b2a55f9",
+          "Name": "",
+          "Description": "Node to evaluate.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a9057647e7e14ec3841cb66919298a95",
+          "Name": "",
+          "Description": "Watch contents.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the output of node."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ExportCSV@string,var[][]",
+      "Id": "a230a5b19be340b395f173659c279882",
+      "Inputs": [
+        {
+          "Id": "eaacb1e45f29462c9515875cc5b29228",
+          "Name": "filePath",
+          "Description": "Path to write to\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7906c12d8f1f4ae693c8569973143a86",
+          "Name": "data",
+          "Description": "List of lists to write into CSV\n\nvar[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "45d5d525e0b346beac039c5e04b5a4d0",
+          "Name": "void",
+          "Description": "void",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Write a list of lists into a file using a comma-separated values format. Outer list represents rows, inner lists represent columns.\n\nData.ExportCSV (filePath: string, data: var[][]): void"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\rmcmahon\\Documents\\Programming\\Dynamo\\CSV_Output.csv",
+      "InputValue": ".\\CSV_Output.csv",
+      "NodeType": "ExtensionNode",
+      "Id": "f0be57ec788d4926bfdf4e51750c991c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "03ffe3b44faa4930abe671841e78d5cf",
+          "Name": "",
+          "Description": "Filename",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a file on the system to get its filename"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.Id",
+      "Id": "e2ab11943e4a4fe9971e95f76f2649c1",
+      "Inputs": [
+        {
+          "Id": "9425521fb2dc4fd38d931822606596d6",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "04424600adbe4bb09df05417c227041c",
+          "Name": "int",
+          "Description": "int",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the Element Id for this element\n\nElement.Id: int"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Enable Python support and load DesignScript library\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\ndataEnteringNode = IN\r\n\r\n# Place your code below this line\r\nElementList = []\r\nfor cnt, item in enumerate(IN[1]):\r\n\titem.append(IN[0][cnt])\r\n\t#dummy.append(IN[0][cnt])\r\n\t\r\n# Assign your output to the OUT variable.\r\nOUT = IN[1]",
+      "VariableInputPorts": true,
+      "Id": "a406c38b5f4a4ada96720735b75a435f",
+      "Inputs": [
+        {
+          "Id": "386ea7c9cf2f4d7489fd49038ca53779",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "122351e6060f4c1280555deeca3886db",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6d42f9255ada4a15a059be975e1fb6f8",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "fcc63d05579a40a9878b9e96d5f9d574",
+      "End": "562a7b4239c44b87bcc19f93e5d1a5a5",
+      "Id": "364d450e66064bf9adfb943d73fc5d54"
+    },
+    {
+      "Start": "75bc3172dde94634ae028a0527e82d00",
+      "End": "d49ed705a3c646378f4e84253e76a6e6",
+      "Id": "54e6789fc7d14ddd8f86c4d637dbe77a"
+    },
+    {
+      "Start": "75bc3172dde94634ae028a0527e82d00",
+      "End": "9425521fb2dc4fd38d931822606596d6",
+      "Id": "7a4b7846a3354e1db2d3edc14689420b"
+    },
+    {
+      "Start": "d6e25c7a94dc4dd09ae179f516754fe4",
+      "End": "122351e6060f4c1280555deeca3886db",
+      "Id": "c25003f585e94ec7a017abf194e1c710"
+    },
+    {
+      "Start": "94b074f71ddd4afc996d61e90586e170",
+      "End": "638d1242a48b467ca158e15be8eff47d",
+      "Id": "adcc9dbc196c483e9f41c82701b8eea9"
+    },
+    {
+      "Start": "476c3bbb132e4f30ae58a3813f911d39",
+      "End": "7906c12d8f1f4ae693c8569973143a86",
+      "Id": "03f1940396004bcca1d9f0ef3b7d84a8"
+    },
+    {
+      "Start": "476c3bbb132e4f30ae58a3813f911d39",
+      "End": "4dbb496d8aa14fa0b5bb13809b2a55f9",
+      "Id": "d59fcf88ebfa4a71ba028f4ac19045cf"
+    },
+    {
+      "Start": "03ffe3b44faa4930abe671841e78d5cf",
+      "End": "eaacb1e45f29462c9515875cc5b29228",
+      "Id": "49a3baf24edc418b8d594e95873c3c0a"
+    },
+    {
+      "Start": "04424600adbe4bb09df05417c227041c",
+      "End": "386ea7c9cf2f4d7489fd49038ca53779",
+      "Id": "9d6cdf5c880c4e8a94ac40c19844ab9a"
+    },
+    {
+      "Start": "6d42f9255ada4a15a059be975e1fb6f8",
+      "End": "5599a9a323e74cd2a610d262f478327b",
+      "Id": "cba884e9d6d5446c94ce84246ae59488"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.2.6826",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 129.16823598739234,
+      "EyeY": -57.835179814947928,
+      "EyeZ": 144.41287558567211,
+      "LookX": -129.16823598739234,
+      "LookY": 57.835179814947928,
+      "LookZ": -144.41287558567211,
+      "UpX": 0.32320840600736,
+      "UpY": 0.87461970713939563,
+      "UpZ": 0.36135397350738918
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Categories",
+        "Id": "8b1091f98d0e4197b9187ae4dbda560f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -106.12006972963013,
+        "Y": -362.53692818246162
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "All Elements of Category",
+        "Id": "634f837c95094a83ab160b7976a879b1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 189.98084372424955,
+        "Y": -361.98282656159665
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Parameters",
+        "Id": "c30e2a9c3083420094d0b2b3204f1e06",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 401.51480821671066,
+        "Y": -297.54206138707355
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Parse Out Shearwall Extents",
+        "Id": "bfe84e4caf3c4764bb6b80bfbb2451b9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 961.529990004257,
+        "Y": -368.44212602001272
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "EXPORT LIST OF WALL LINE",
+        "Id": "0b40a4881b0b4144803eee6cf63a0e6b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1176.6029671882036,
+        "Y": -368.54320380226756
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "9cd962864bc44291884d85a4a53f8420",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1553.330236143199,
+        "Y": -223.04760414802394
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ExportCSV",
+        "Id": "a230a5b19be340b395f173659c279882",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1547.3383703130148,
+        "Y": -519.33704354862971
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "File Path",
+        "Id": "f0be57ec788d4926bfdf4e51750c991c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1335.2050275842146,
+        "Y": -519.33704354862971
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.Id",
+        "Id": "e2ab11943e4a4fe9971e95f76f2649c1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 419.59335678338994,
+        "Y": -442.04213583296547
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Add Element ID to Parameter List",
+        "Id": "a406c38b5f4a4ada96720735b75a435f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 725.50586802316184,
+        "Y": -367.93702178206
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "97994730f8c442a99295a5e78cae6dc0",
+        "Title": "EXTRACT WALLS, PARSE OUT SHEARWALLS, PACKAGE AND EXPORT",
+        "Nodes": [
+          "8b1091f98d0e4197b9187ae4dbda560f",
+          "634f837c95094a83ab160b7976a879b1",
+          "9cd962864bc44291884d85a4a53f8420",
+          "0b40a4881b0b4144803eee6cf63a0e6b",
+          "c30e2a9c3083420094d0b2b3204f1e06",
+          "bfe84e4caf3c4764bb6b80bfbb2451b9",
+          "a230a5b19be340b395f173659c279882",
+          "f0be57ec788d4926bfdf4e51750c991c"
+        ],
+        "Left": -116.12006972963013,
+        "Top": -572.33704354862971,
+        "Width": 1931.4503058728292,
+        "Height": 727.28943940060572,
+        "FontSize": 36.0,
+        "InitialTop": -519.33704354862971,
+        "InitialHeight": 441.28943940060577,
+        "TextblockHeight": 43.0,
+        "Background": "#FFA4E1FF"
+      },
+      {
+        "Id": "98f10e171066418b825a44273e595ed8",
+        "Title": "This function merges the element ID and the parameters so we can track which element is being modified.",
+        "Nodes": [],
+        "Left": 686.71912116370345,
+        "Top": -241.56729814317862,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "220ce21c0a4246ac9264dfa31544cfbe",
+        "Title": "This element parses out any \r\nnon Shearwall Extents elements.",
+        "Nodes": [],
+        "Left": 949.46805150197179,
+        "Top": -419.23562246715062,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "3078d2c3b7d04c9f965b72bac8eb544f",
+        "Title": "This parses down information\r\ninto useable stuff and then\r\nkicks it into a .CSV",
+        "Nodes": [],
+        "Left": 1174.6814203633448,
+        "Top": -251.57678120368405,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 436.04389322322015,
+    "Y": 586.07839845824412,
+    "Zoom": 0.58727039376189238
+  }
+}

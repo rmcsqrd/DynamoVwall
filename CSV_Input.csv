@@ -1,8 +1,8 @@
-1111413,Comments : LINE 2,"Length : 1' - 0""",SW Nailing : D,HD : HDU2
-1111537,Comments : LINE 2,"Length : 2' - 0""",SW Nailing : D,HD : HDU2
-1111590,Comments : LINE 2,"Length : 3' - 0 1/8""",SW Nailing : D,HD : HDU2
-1111648,Comments : LINE A,"Length : 3' - 3 1/4""",SW Nailing : D,HD : HDU2
-1111709,Comments : LINE A,"Length : 3' - 8 5/8""",SW Nailing : D,HD : HDU2
-1111760,Comments : LINE 1,"Length : 3' - 6""",SW Nailing : D,HD : HDU2
-1111833,Comments : LINE 1,"Length : 3' - 6 1/8""",SW Nailing : D,HD : HDU2
-1111872,Comments : LINE B,"Length : 10' - 0 1/8""",SW Nailing : D,HD : HDU2
+1111413,LINE 2,"Length : 1' - 0""",A,HDU14
+1111537,LINE 2,"Length : 2' - 0""",B,HDU14
+1111590,LINE 2,"Length : 3' - 0 1/8""",C,HDU14
+1111648,LINE A,"Length : 3' - 3 1/4""",D,HDU14
+1111709,LINE A,"Length : 3' - 8 5/8""",A,HDU14
+1111760,LINE 1,"Length : 3' - 6""",B,HDU14
+1111833,LINE 1,"Length : 3' - 6 1/8""",C,HDU14
+1111872,LINE B,"Length : 10' - 0 1/8""",D,HDU14
